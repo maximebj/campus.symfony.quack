@@ -13,7 +13,7 @@ class QuackType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('content', TextareaType::class, ['required' => true])
+            ->add('content', TextareaType::class, ['required' => true, 'label' => false])
         ;
     }
 

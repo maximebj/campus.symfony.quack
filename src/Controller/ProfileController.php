@@ -28,8 +28,10 @@ class ProfileController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) { 
             
+            # Récupérer le champ démappé (décorellé)
             $plainPassword = $form->get('password')->getData();
-        
+
+            # Hashage du mot de passe seulement si le champ est rempli
             if (! empty($plainPassword)) {
                 $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
                 $user->setPassword($hashedPassword);

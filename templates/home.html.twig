@@ -15,7 +15,8 @@
       <li class="py-6 border-b border-slate-700">
         
         <p class="font-bold">
-          @{{quack.user.duckname}}
+          {{ quack.user.fullName }}
+          <span class="text-sm text-slate-400">@{{quack.user.duckname}}</span>
         </p>
         
         <p class="text-slate-500">
@@ -26,7 +27,7 @@
           {{quack.content}}
         </p> 
 
-        {% if is_granted('ROLE_USER') and quack.user.id == user.id %}
+        {% if is_granted('ROLE_USER') and quack.user == app.user %}
           <div class="flex gap-2 text-sm">
             <a class="text-sky-400" href="{{ path('app_quack_show', {'id': quack.id}) }}">Voir le quack</a>
             <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
