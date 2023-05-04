@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Quack;
 use App\Form\QuackType;
 use App\Repository\QuackRepository;
+use App\Services\QuackService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,19 +26,15 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/new', name: 'app_quack_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, QuackRepository $quackRepository, Security $security): Response
+    public function new(Request $request, QuackService $quackService): Response
     {   
         $quack = new Quack();
         $form = $this->createForm(QuackType::class, $quack);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $security->getUser();
-
-            $quack->setCreatedAt(new \DateTime());
-            $quack->setUser($user);
-            $quackRepository->save($quack, true);
-
+            
+            $quackService->handleQuackForm($quack);
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -57,7 +54,7 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/edit', name: 'app_quack_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Quack $quack, QuackRepository $quackRepository, Security $security): Response
+    public function edit(Request $request, Quack $quack, QuackService $quackService, Security $security): Response
     {
         # Get User
         $user = $security->getUser();
@@ -72,8 +69,8 @@ class QuackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $quack->setCreatedAt(new \DateTime());
-            $quackRepository->save($quack, true);
+            
+            $quackService->handleQuackForm($quack);
 
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }

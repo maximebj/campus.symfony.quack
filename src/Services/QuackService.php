@@ -3,32 +3,26 @@
 namespace App\Services;
 
 use App\Entity\Quack;
-use App\Form\QuackType;
 use App\Repository\QuackRepository;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class QuackService
 {
-  public function __construct(
-    protected Request $request, 
+  public function __construct( 
     protected QuackRepository $quackRepository, 
-    protected FormBuilderInterface $builder
+    protected Security $security
   ) {}
 
-  public function getQuackForm(Quack|null $quack = null)
+  public function handleQuackForm(Quack $quack): void
   {
-    if ($quack === null) {
-      $quack = new Quack();
-    }
+    # Get User
+    $user = $this->security->getUser();
     
-    $form = $this->builder->createForm(QuackType::class, $quack);
-    $form->handleRequest($this->request);
+    # Set current date and current user
+    $quack->setCreatedAt(new \DateTime());
+    $quack->setUser($user);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-      $this->quackRepository->save($quack, true);
-    }
-    var_dump($form);
-    return $form;
+    # Save in DB + Flush
+    $this->quackRepository->save($quack, true);
   }
 }
