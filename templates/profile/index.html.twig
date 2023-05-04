@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quack index{% endblock %}
+
+{% block body %}
+    <h1>Profil de {{user.fullName}}</h1>
+
+    {{ form(form) }}
+{% endblock %}

@@ -57,8 +57,17 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/edit', name: 'app_quack_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Quack $quack, QuackRepository $quackRepository): Response
+    public function edit(Request $request, Quack $quack, QuackRepository $quackRepository, Security $security): Response
     {
+        # Get User
+        $user = $security->getUser();
+
+        # Check if user is the owner of the quack
+        if ($quack->getUser() !== $user) {
+            throw $this->createAccessDeniedException('You are not the owner of this quack');
+        }
+        
+        # Generate form
         $form = $this->createForm(QuackType::class, $quack);
         $form->handleRequest($request);
 
@@ -77,8 +86,16 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'app_quack_delete', methods: ['POST'])]
-    public function delete(Request $request, Quack $quack, QuackRepository $quackRepository): Response
+    public function delete(Request $request, Security $security, Quack $quack, QuackRepository $quackRepository): Response
     {
+        # Get User
+        $user = $security->getUser();
+        
+        # Check if user is the owner of the quack
+        if ($quack->getUser() !== $user) {
+            throw $this->createAccessDeniedException('You are not the owner of this quack');
+        }
+        
         if ($this->isCsrfTokenValid('delete'.$quack->getId(), $request->request->get('_token'))) {
             $quackRepository->remove($quack, true);
         }
