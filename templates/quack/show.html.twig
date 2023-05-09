@@ -32,8 +32,36 @@
 
   <h2 class="text-xl my-5">Réponses</h2>
   <ul class="pl-8">
-    {% for quack in quacksAnswers %}
-      {{ include('quack/_quack.html.twig' ) }}
+    {% for quackAnswer in quacksAnswers %}
+      <li class="py-6 border-b border-slate-700">
+
+        <p class="font-bold">
+          {{ quackAnswer.user.fullName }}
+          <span class="text-sm text-slate-400">@{{quackAnswer.user.duckname}}</span>
+        </p>
+
+        <p class="text-slate-500">
+          Le {{ quackAnswer.createdAt|date('d F Y à H\\hi') }}
+        </p>
+
+        <p class="my-4 text-base">
+          {{quackAnswer.content}}
+        </p> 
+
+        {% if is_granted('ROLE_USER') and quackAnswer.user == app.user %}
+          <div class="flex gap-2 text-sm">
+            <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
+            {{ include('quack/_delete_form.html.twig') }}
+          </div>
+        {% endif %}
+
+        {% if is_granted('ROLE_USER') and quack.user == app.user %}
+          <div class="flex gap-2 text-sm">
+            {{ include('quack/_delete_form.html.twig') }}
+          </div>
+        {% endif %}
+
+      </li>
     {% endfor %}
   </ul>
 
