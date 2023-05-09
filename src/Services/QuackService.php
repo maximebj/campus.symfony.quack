@@ -15,19 +15,19 @@ class QuackService
 
   public function handleQuackForm(Quack $quack, int|null $parent = null): void
   {
-    # Get User
+    # Récupérer l'utilisateur connecté
     $user = $this->security->getUser();
     
-    # Set current date and current user
+    # Définir la date de publication et l'utilisateur automatiquement
     $quack->setCreatedAt(new \DateTime());
     $quack->setUser($user);
 
-    # Set Parent if is answer
+    # Ajout de l'id du parent dans le cas d'un quack de réponse
     if ( $parent !== null ) {
       $quack->setParent($parent);
     }
 
-    # Save in DB + Flush
+    # Enregistrer dans la base de données et flusher
     $this->quackRepository->save($quack, true);
   }
 }

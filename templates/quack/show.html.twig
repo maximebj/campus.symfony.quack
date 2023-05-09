@@ -53,9 +53,7 @@
             <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
             {{ include('quack/_delete_form.html.twig') }}
           </div>
-        {% endif %}
-
-        {% if is_granted('ROLE_USER') and quack.user == app.user %}
+        {% elseif is_granted('ROLE_USER') and quack.user == app.user %}
           <div class="flex gap-2 text-sm">
             {{ include('quack/_delete_form.html.twig') }}
           </div>

@@ -37,9 +37,11 @@ class ProfileController extends AbstractController
                 $user->setPassword($hashedPassword);
             }
 
+            # Enregistrer l'utilisateur
             $userRepository->save($user, true);
         }
 
+        # Afficher le template
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'form' => $form,

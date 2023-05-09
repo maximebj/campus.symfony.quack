@@ -29,6 +29,18 @@
             </div>
         </header>
         <main class="max-w-prose mx-auto px-4">
+            {% for success in app.flashes('success') %}
+                <div class="my-6 p-2 rounded-md bg-green-900">
+                    ✅ {{success}}
+                </div>
+            {% endfor %}
+
+            {% for error in app.flashes('error') %}
+                <div class="my-6 p-2 rounded-md bg-red-900">
+                    🗑️ {{error}}
+                </div>
+            {% endfor %}
+
             {% block body %}{% endblock %}
         </main>
     </body>

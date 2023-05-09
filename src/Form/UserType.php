@@ -15,6 +15,7 @@ class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        # On décorelle le mot de passe pour éviter d'afficher son hash dans le formulaire, pour des raisons de sécurité grâce à mapper => false
         $builder
             ->add('first_name', TextType::class, ['required' => true])
             ->add('last_name', TextType::class, ['required' => true])
