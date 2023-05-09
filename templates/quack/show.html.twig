@@ -3,28 +3,42 @@
 {% block title %}Quack{% endblock %}
 
 {% block body %}
-    <h1>Quack</h1>
+  <h1 class="my-6 text-2xl font-bold">Quack</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ quack.id }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ quack.content }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+  <a class="text-sky-400" href="{{ path('app_home') }}">← Retour aux quacks</a>
 
-    <a href="{{ path('app_quack_index') }}">back to list</a>
+  <div class="py-6 border-b border-slate-700">
 
-    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+    <p class="font-bold">
+      {{ quack.user.fullName }}
+      <span class="text-sm text-slate-400">@{{quack.user.duckname}}</span>
+    </p>
 
-    {{ include('quack/_delete_form.html.twig') }}
+    <p class="text-slate-500">
+      Le {{ quack.createdAt|date('d F Y à H\\hi') }}
+    </p>
+
+    <p class="my-4 text-base">
+      {{quack.content}}
+    </p> 
+
+    {% if is_granted('ROLE_USER') and quack.user == app.user %}
+      <div class="flex gap-2 text-sm">
+        <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
+        {{ include('quack/_delete_form.html.twig') }}
+      </div>
+    {% endif %}
+  </div>
+
+  <h2 class="text-xl my-5">Réponses</h2>
+  <ul class="pl-8">
+    {% for quack in quacksAnswers %}
+      {{ include('quack/_quack.html.twig' ) }}
+    {% endfor %}
+  </ul>
+
+  {% if is_granted('ROLE_USER') %}
+    {{ include('quack/_answer_form.html.twig') }}
+  {% endif %}
+
 {% endblock %}

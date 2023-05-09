@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Quack;
 use App\Form\QuackType;
+use App\Form\QuackAnswerType;
 use App\Repository\QuackRepository;
 use App\Services\QuackService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,11 +45,33 @@ class QuackController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_quack_show', methods: ['GET'])]
-    public function show(Quack $quack): Response
+    #[Route('/{id}', name: 'app_quack_show', methods: ['GET', 'POST'])]
+    public function show(Quack $quack, Request $request, QuackRepository $quackRepository, QuackService $quackService): Response
     {
+        # Get Quack anwsers
+        $quacksAnswers = $quackRepository->findBy(
+          ['parent' => $quack->getId()], 
+          ['created_at' => 'DESC']
+        );
+        
+        # Get Quack form
+        $quackAnswer = new Quack();
+        $quackForm = $this->createForm(QuackAnswerType::class, $quackAnswer);
+        $quackForm->handleRequest($request);
+
+        if ($quackForm->isSubmitted() && $quackForm->isValid()) {
+
+            # Récupérer le champ démappé (décorellé)
+            $parent = $quackForm->get('parent')->getData();
+            
+            $quackService->handleQuackForm($quackAnswer, $parent); 
+            return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('quack/show.html.twig', [
             'quack' => $quack,
+            'quacksAnswers' => $quacksAnswers,
+            'form'  => $quackForm,
         ]);
     }
 

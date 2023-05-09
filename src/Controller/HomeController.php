@@ -17,8 +17,11 @@ class HomeController extends AbstractController
   #[Route('/', name: 'app_home')] 
   public function home(Request $request, QuackRepository $quackRepository, QuackService $quackService): Response
   { 
-    # Get Quacks
-    $quacks = $quackRepository->findBy([], ['created_at' => 'DESC']);
+    # Get top level Quacks ordered by date
+    $quacks = $quackRepository->findBy(
+      ['parent' => null], 
+      ['created_at' => 'DESC']
+    );
     
     # Get Quack form
     $quack = new Quack();
