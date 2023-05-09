@@ -8,7 +8,6 @@ use App\Form\QuackAnswerType;
 use App\Repository\QuackRepository;
 use App\Services\QuackService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,7 +53,7 @@ class QuackController extends AbstractController
           ['created_at' => 'DESC']
         );
         
-        # Get Quack form
+        # Get Quack Answer form
         $quackAnswer = new Quack();
         $quackForm = $this->createForm(QuackAnswerType::class, $quackAnswer);
         $quackForm->handleRequest($request);
@@ -77,10 +76,10 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/edit', name: 'app_quack_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Quack $quack, QuackService $quackService, Security $security): Response
+    public function edit(Request $request, Quack $quack, QuackService $quackService): Response
     {
         # Get User
-        $user = $security->getUser();
+        $user = $this->getUser();
 
         # Check if user is the owner of the quack
         if ($quack->getUser() !== $user) {
@@ -106,10 +105,10 @@ class QuackController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'app_quack_delete', methods: ['POST'])]
-    public function delete(Request $request, Security $security, Quack $quack, QuackRepository $quackRepository): Response
+    public function delete(Request $request, Quack $quack, QuackRepository $quackRepository): Response
     {
         # Get User
-        $user = $security->getUser();
+        $user = $this->getUser();
         
         # Check if user is the owner of the quack
         if ($quack->getUser() !== $user) {
