@@ -120,6 +120,16 @@ class QuackController extends AbstractController
             $quackRepository->remove($quack, true);
         }
 
+        # Delete Quack anwsers
+        $quacksAnswers = $quackRepository->findBy(
+          ['parent' => $quack->getId()], 
+          ['created_at' => 'DESC']
+        );
+
+        foreach ($quacksAnswers as $quackAnswer) {
+            $quackRepository->remove($quackAnswer, true);
+        }
+
         return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
     }
 }
