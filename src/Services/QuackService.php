@@ -48,11 +48,11 @@ class QuackService
     # Récupérer le parent
     $parent = $this->quackRepository->find($parent);
 
-    if( $parent->getParent() !== null ) {
+    if( $parent->getParentId() !== null ) {
       throw new \Exception("Vous ne pouvez pas répondre à un Quack qui est déjà une réponse");
     }
 
     # Si tout est bon, on définit le parent
-    $this->quack->setParent($parent);
+    $this->quack->setParentId($parent->getId());
   }
 }

@@ -42,7 +42,7 @@ class QuackRepository extends ServiceEntityRepository
     public function getParentQuacksOnly(): array
     {
         return $this->createQueryBuilder('q')
-            ->where('q.parent IS NULL')
+            ->where('q.parent_id IS NULL')
             ->orderBy('q.created_at', 'DESC')
             ->getQuery()
             ->getResult()
@@ -52,8 +52,8 @@ class QuackRepository extends ServiceEntityRepository
     public function getQuacksAnswers(Quack $quack): array
     {
         return $this->createQueryBuilder('q')
-            ->where('q.parent = :parent')
-            ->setParameter('parent', $quack->getId())
+            ->where('q.parent_id = :parent_id')
+            ->setParameter('parent_id', $quack->getId())
             ->orderBy('q.created_at', 'DESC')
             ->getQuery()
             ->getResult()

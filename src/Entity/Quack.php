@@ -25,7 +25,7 @@ class Quack
     private ?User $user = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $parent = null;
+    private ?int $parent_id = null;
 
     public function getId(): ?int
     {
@@ -68,14 +68,14 @@ class Quack
         return $this;
     }
 
-    public function getParent(): ?int
+    public function getParentId(): ?int
     {
-        return $this->parent;
+        return $this->parent_id;
     }
 
-    public function setParent(?int $parent): self
+    public function setParentId(?int $parent_id): self
     {
-        $this->parent = $parent;
+        $this->parent_id = $parent_id;
 
         return $this;
     }
