@@ -18,10 +18,7 @@ class HomeController extends AbstractController
   public function home(Request $request, QuackRepository $quackRepository, QuackService $quackService): Response
   { 
     # Récupérer les quacks parents uniquement, les plus récents en premier
-    $quacks = $quackRepository->findBy(
-      ['parent' => null], 
-      ['created_at' => 'DESC']
-    );
+    $quacks = $quackRepository->getParentQuacksOnly();
     
     # Générer le formulaire d'ajout de quack
     $quack = new Quack();
@@ -35,8 +32,8 @@ class HomeController extends AbstractController
 
       # Ajouter un message flash de succès
       $this->addFlash(
-          'success',
-          'Votre quack a été publié !'
+        'success',
+        'Votre quack a été publié !'
       );
 
       # Rediriger vers l'accueil après un ajout réussi

@@ -52,10 +52,7 @@ class QuackController extends AbstractController
         # pas besoin de $quack = $quackRepository->find($id);
         
         # Récupérer les enfants de ce Quack
-        $quacksAnswers = $quackRepository->findBy(
-          ['parent' => $quack->getId()], 
-          ['created_at' => 'DESC']
-        );
+        $quacksAnswers = $quackRepository->getQuacksAnswers($quack);
         
         # Préparer le formulaire de réponse à un Quack
         $quackAnswer = new Quack();

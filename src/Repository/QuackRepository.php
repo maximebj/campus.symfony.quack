@@ -38,4 +38,25 @@ class QuackRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getParentQuacksOnly(): array
+    {
+        return $this->createQueryBuilder('q')
+            ->where('q.parent IS NULL')
+            ->orderBy('q.created_at', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function getQuacksAnswers(Quack $quack): array
+    {
+        return $this->createQueryBuilder('q')
+            ->where('q.parent = :parent')
+            ->setParameter('parent', $quack->getId())
+            ->orderBy('q.created_at', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
