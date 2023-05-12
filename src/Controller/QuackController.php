@@ -110,19 +110,23 @@ class QuackController extends AbstractController
     #[Route('/{id}/delete', name: 'app_quack_delete', methods: ['POST'])]
     public function delete(Request $request, Quack $quack, QuackRepository $quackRepository): Response
     {
+        # Validation du token CSRF (voir le template)
+        if (! $this->isCsrfTokenValid('delete'.$quack->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('You cannot delete this Quack');
+        }
+        
         # Récupérer l'utilisateur connecter
         $user = $this->getUser();
         
         # On vérifie que l'utilisateur est bien le propriétaire du Quack à supprimer
         if ($quack->getUser() !== $user) {
 
-            # Vérification du parent du Quack
-            $parentId = $quack->getParentId();
-
-            if ( $parentId !== null ) {
+            # On va vérifier qu'on est peut-être le propriétaire du Quack parent du Quack
+            # Dans ce cas, on a le droit de supprimer
+            if ( $quack->getParentId() !== null ) {
 
                 # On récupère le parent
-                $parent = $quackRepository->find($parentId);
+                $parent = $quackRepository->find($quack->getParentId());
 
                 # On vérifie que l'on est propriétaire du parent
                 if( $parent->getUser() !== $user ) {
@@ -134,17 +138,12 @@ class QuackController extends AbstractController
                 throw $this->createAccessDeniedException('You are not the owner of this quack');
             }
         }
-        
-        # Validation du token CSRF (voir le template)
-        if (! $this->isCsrfTokenValid('delete'.$quack->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('You cannot delete this Quack');
-        }
 
         # ⚠️ On supprime d'abord les éventuels Quacks enfants 
         # important de le faire en premier
 
         # On récupère les Quacks enfants
-        $quacksAnswers = $quackRepository->getQuacksAnswers();
+        $quacksAnswers = $quackRepository->getQuacksAnswers($quack);
 
         # Et on les supprime un par un
         foreach ($quacksAnswers as $quackAnswer) {
