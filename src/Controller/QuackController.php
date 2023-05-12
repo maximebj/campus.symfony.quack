@@ -115,7 +115,7 @@ class QuackController extends AbstractController
             throw $this->createAccessDeniedException('You cannot delete this Quack');
         }
         
-        # Récupérer l'utilisateur connecter
+        # Récupérer l'utilisateur connecté
         $user = $this->getUser();
         
         # On vérifie que l'utilisateur est bien le propriétaire du Quack à supprimer

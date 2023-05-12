@@ -19,7 +19,7 @@
 
       {% if quack.user == app.user %}
           <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
-          {{ include('quack/_delete_form.html.twig') }}
+          {% include 'quack/_delete_form.html.twig' with {'quackId': quack.id } %}
       {% endif %}
     </div>
   {% endif %}
