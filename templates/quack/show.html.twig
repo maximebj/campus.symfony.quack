@@ -25,7 +25,7 @@
     {% if is_granted('ROLE_USER') and quack.user == app.user %}
       <div class="flex gap-2 text-sm">
         <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
-        {{ include('quack/_delete_form.html.twig') }}
+        {% include 'quack/_delete_form.html.twig' %}
       </div>
     {% endif %}
   </div>
@@ -51,11 +51,11 @@
         {% if is_granted('ROLE_USER') and quackAnswer.user == app.user %}
           <div class="flex gap-2 text-sm">
             <a class="text-sky-400" href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a>
-            {{ include('quack/_delete_form.html.twig') }}
+            {% include 'quack/_delete_form.html.twig' %}
           </div>
         {% elseif is_granted('ROLE_USER') and quack.user == app.user %}
           <div class="flex gap-2 text-sm">
-            {{ include('quack/_delete_form.html.twig') }}
+            {% include 'quack/_delete_form.html.twig' %}
           </div>
         {% endif %}
 
@@ -64,7 +64,7 @@
   </ul>
 
   {% if is_granted('ROLE_USER') %}
-    {{ include('quack/_answer_form.html.twig') }}
+    {% include 'quack/_form.html.twig' with {'placeholder':'Répondre à @' ~ quack.user.duckname} %}
   {% endif %}
 
 {% endblock %}

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Quack;
 use App\Form\QuackType;
-use App\Form\QuackAnswerType;
 use App\Repository\QuackRepository;
 use App\Services\QuackService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,6 +38,7 @@ class QuackController extends AbstractController
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }
 
+        # Afficher le template
         return $this->render('quack/new.html.twig', [
             'quack' => $quack,
             'form' => $form,
@@ -46,7 +46,7 @@ class QuackController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_quack_show', methods: ['GET', 'POST'])]
-    public function show(Quack $quack, Request $request, QuackRepository $quackRepository, QuackService $quackService): Response
+    public function show(Quack $quack, Request $request, QuackService $quackService, QuackRepository $quackRepository): Response
     {
         # Le quack est récupéré automatiquement grâce au ParamConverter
         # pas besoin de $quack = $quackRepository->find($id);
@@ -56,23 +56,23 @@ class QuackController extends AbstractController
         
         # Préparer le formulaire de réponse à un Quack
         $quackAnswer = new Quack();
-        $quackForm = $this->createForm(QuackAnswerType::class, $quackAnswer);
+        $quackForm = $this->createForm(QuackType::class, $quackAnswer);
         $quackForm->handleRequest($request);
 
         if ($quackForm->isSubmitted() && $quackForm->isValid()) {
 
-            # Récupérer le champ parent démappé (décorellé)
-            $parent = $quackForm->get('parent')->getData();
-            
             # Service de gestion du formulaire de Quack, cette fois on passe le parent en second paramètre
-            $quackService->handleQuackForm($quackAnswer, $parent); 
-            return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+            $quackService->handleQuackForm($quackAnswer, $quack); 
+
+            # Rediriger vers la page du quack
+            return $this->redirectToRoute('app_quack_show', ['id' => $quack->getId()], Response::HTTP_SEE_OTHER);
         }
         
+        # Afficher le template
         return $this->render('quack/show.html.twig', [
             'quack' => $quack,
             'quacksAnswers' => $quacksAnswers,
-            'form'  => $quackForm,
+            'form' => $quackForm->createView(),    
         ]);
     }
 
@@ -99,6 +99,7 @@ class QuackController extends AbstractController
             return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
         }
 
+        # Afficher le template
         return $this->render('quack/edit.html.twig', [
             'quack' => $quack,
             'form' => $form,
@@ -114,7 +115,24 @@ class QuackController extends AbstractController
         
         # On vérifie que l'utilisateur est bien le propriétaire du Quack à supprimer
         if ($quack->getUser() !== $user) {
-            throw $this->createAccessDeniedException('You are not the owner of this quack');
+
+            # Vérification du parent du Quack
+            $parentId = $quack->getParentId();
+
+            if ( $parentId !== null ) {
+
+                # On récupère le parent
+                $parent = $quackRepository->find($parentId);
+
+                # On vérifie que l'on est propriétaire du parent
+                if( $parent->getUser() !== $user ) {
+                    throw $this->createAccessDeniedException('You are not the owner of this quack');
+                }
+
+            } else {
+                # Si on n'est pas le propriétaire du quack, ni du quack parent, on ne peut pas supprimer
+                throw $this->createAccessDeniedException('You are not the owner of this quack');
+            }
         }
         
         # Validation du token CSRF (voir le template)
@@ -126,10 +144,7 @@ class QuackController extends AbstractController
         # important de le faire en premier
 
         # On récupère les Quacks enfants
-        $quacksAnswers = $quackRepository->findBy(
-          ['parent' => $quack->getId()], 
-          ['created_at' => 'DESC']
-        );
+        $quacksAnswers = $quackRepository->getQuacksAnswers();
 
         # Et on les supprime un par un
         foreach ($quacksAnswers as $quackAnswer) {

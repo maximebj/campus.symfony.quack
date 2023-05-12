@@ -17,10 +17,10 @@ class ProfileController extends AbstractController
 {
     #[IsGranted('ROLE_USER')]
     #[Route('/', name: 'app_profile', methods: ['GET', 'POST'])]
-    public function index(Request $request, Security $security, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository): Response
+    public function index(Request $request, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository): Response
     {
         # Get User
-        $user = $security->getUser();
+        $user = $this->getUser();
 
         # Generate Form
         $form = $this->createForm(UserType::class, $user);

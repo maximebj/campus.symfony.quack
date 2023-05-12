@@ -16,7 +16,7 @@ class QuackService
   ) {
   }
 
-  public function handleQuackForm(Quack $quack, int|null $parent = null): void
+  public function handleQuackForm(Quack $quack, Quack|null $parent = null): void
   {
     $this->quack = $quack;
     
@@ -34,7 +34,7 @@ class QuackService
     $this->quackRepository->save($this->quack, true);
   }
 
-  protected function maybeSetParent($parent)
+  protected function maybeSetParent(Quack|null $parent): void
   {
     # Ajout de l'id du parent dans le cas d'un quack de réponse
     if ( $parent === null ) {
@@ -44,9 +44,6 @@ class QuackService
     # On vérifie que le parent n'est pas un enfant d'un autre Quack
     # De cette manière on empêche les réponses de niveau 3
     # l'utilisateur pourrait changer l'id du parent dans le formulaire
-
-    # Récupérer le parent
-    $parent = $this->quackRepository->find($parent);
 
     if( $parent->getParentId() !== null ) {
       throw new \Exception("Vous ne pouvez pas répondre à un Quack qui est déjà une réponse");

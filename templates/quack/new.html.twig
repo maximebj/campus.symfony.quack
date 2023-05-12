@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Create new Quack</h1>
 
-    {{ include('quack/_form.html.twig') }}
+    {% include 'quack/_form.html.twig' with {'placeholder': 'Quoi de neuf ?'} %}
 
     <a href="{{ path('app_quack_index') }}">back to list</a>
 {% endblock %}
